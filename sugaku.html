@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>数学クエスト</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+* { font-family: 'Press Start 2P', monospace; }
+
+body {
+  margin: 0;
+  padding: 30px;
+  background: url('https://assets.clip-studio.com/ja-jp/description/1871098/img/c6ff85e114-004d-f7ba-d30a-ac1e14d894.png')
+              no-repeat center center fixed;
+  background-size: cover;
+}
+
+.window {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 20px;
+  border: 4px solid #3b7cff;
+  border-radius: 4px;
+}
+
+.choice {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  background: #111;
+  border: 2px solid #3b7cff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.choice:hover { background: #222; }
+
+.btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #3b7cff;
+  border: 2px solid #fff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+#message { text-align: center; font-size: 20px; }
+</style>
+</head>
+
+<body>
+
+<div class="window" id="quiz-area">
+  <h1>▶ 数学クエスト</h1>
+  <h2 id="question"></h2>
+  <button class="choice" id="c1"></button>
+  <button class="choice" id="c2"></button>
+  <button class="choice" id="c3"></button>
+  <button class="choice" id="c4"></button>
+</div>
+
+<div class="window hidden" id="result-area">
+  <h2 id="message"></h2>
+  <p id="explain"></p>
+  <button class="btn" id="next-btn">▶ つぎへ</button>
+</div>
+
+<div class="window hidden" id="end-area">
+  <h1>🎉 クエストクリア！</h1>
+  <p style="text-align:center;">
+    おめでとう！<br>
+    すべての もんだい を かいけつ した！
+  </p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const normalBg =
+    "https://assets.clip-studio.com/ja-jp/description/1871098/img/c6ff85e114-004d-f7ba-d30a-ac1e14d894.png";
+
+  const correctBg =
+    "https://cdn-ak.f.st-hatena.com/images/fotolife/s/shima888shima/20160304/20160304223428.png";
+
+  const wrongBg =
+    "https://t4.ftcdn.net/jpg/05/19/23/33/360_F_519233339_txOKdO17Ukj2GilJhCJMWNa4Ku3YJz62.jpg";
+
+  function setBackground(url) {
+    document.body.style.backgroundImage = `url('${url}')`;
+  }
+
+  /* ===== 問題データ ===== */
+  const questions = [
+
+    // ======== 微分・接線 ========
+    {
+      q: "【問1-1】曲線 y＝x³－4x 上の点(2，0)における接線の方程式を求めるとき、最初にやることは？",
+      choices: [
+        "点(2，0)を y＝x³－4x に代入する",
+        "y＝x³－4x を微分する",
+        "y＝x³－4x を積分する",
+        "あきらめる"
+      ],
+      answer: 1,
+      explain: "接線の方程式には傾きが必要なので、まず関数を微分して傾きを求める。"
+    },
+    {
+      q: "【問1-2】なぜ y＝x³－4x を微分する？",
+      choices: [
+        "直線の方程式の傾きを求めたいから",
+        "なんとなく",
+        "二次関数に帰着させたいから",
+        "増減表を書きたいから"
+      ],
+      answer: 0,
+      explain: "接線は直線なので、その傾きが必要であり、傾きは微分で求められる。"
+    },
+
+    // ======== 一次不定方程式 ========
+    {
+      q: "【問2-1】一次不定方程式 3x＋5y＝1 を解くときの基本的な考え方として正しいものはどれ？",
+      choices: [
+        "x と y を同時に1つずつ決めて代入する",
+        "x または y のどちらか一方に値を決めて、もう一方を求める",
+        "x＝y とおいて解く",
+        "未知数が2つあるので解けない"
+      ],
+      answer: 1,
+      explain: "一次不定方程式では、どちらか一方に値を決めることで、もう一方が定まる。"
+    },
+    {
+      q: "【問2-2】一次不定方程式 3x＋5y＝1 のすべての整数解を正しく表しているものはどれ？",
+      choices: [
+        "x＝2＋5t，y＝−1−3t（tは整数）",
+        "x＝2−5t，y＝−1＋3t（tは整数）",
+        "x＝5t，y＝1−3t（tは整数）",
+        "(x，y)＝(2，−1) のみ"
+      ],
+      answer: 0,
+      explain: "一つの整数解 (2，−1) を基にすると、x＝2＋5t，y＝−1−3t（tは整数）がすべての整数解を表す。"
+    }
+
+  ];
+
+  let current = 0;
+
+  const qArea = document.getElementById("quiz-area");
+  const resultArea = document.getElementById("result-area");
+  const endArea = document.getElementById("end-area");
+  const qText = document.getElementById("question");
+  const btns = [
+    document.getElementById("c1"),
+    document.getElementById("c2"),
+    document.getElementById("c3"),
+    document.getElementById("c4")
+  ];
+  const msg = document.getElementById("message");
+  const explain = document.getElementById("explain");
+  const nextBtn = document.getElementById("next-btn");
+
+  function loadQuestion() {
+    const q = questions[current];
+    qText.textContent = q.q;
+    btns.forEach((btn, i) => {
+      btn.textContent = q.choices[i];
+      btn.onclick = () => selectAnswer(i);
+    });
+  }
+
+  function selectAnswer(i) {
+    const q = questions[current];
+    qArea.classList.add("hidden");
+    resultArea.classList.remove("hidden");
+
+    if (i === q.answer) {
+      msg.textContent = "🎉 せいかい！";
+      setBackground(correctBg);
+    } else {
+      msg.textContent = "❌ ちがう…";
+      setBackground(wrongBg);
+    }
+
+    explain.textContent = q.explain;
+
+    nextBtn.onclick = () => {
+      current++;
+      setBackground(normalBg);
+      resultArea.classList.add("hidden");
+
+      if (current >= questions.length) {
+        endArea.classList.remove("hidden");
+      } else {
+        qArea.classList.remove("hidden");
+        loadQuestion();
+      }
+    };
+  }
+
+  loadQuestion();
+});
+</script>
+
+</body>
+</html>
