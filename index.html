@@ -225,6 +225,8 @@ document.addEventListener("DOMContentLoaded", function() {
         qArea.classList.remove("hidden");
         loadQuestion();
       } else {
+        bgm.pause();
+        bgm.currentTime = 0;
         resultArea.classList.add("hidden");
         endArea.classList.remove("hidden");
       }
@@ -245,5 +247,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+
 
 
