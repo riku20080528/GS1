@@ -58,7 +58,18 @@ body {
 
 <body>
 
-<div class="window" id="quiz-area">
+<!-- ===== タイトル画面（追加） ===== -->
+<div class="window" id="title-area">
+  <h1 style="text-align:center;">▶ 数学クエスト</h1>
+  <p style="text-align:center;">
+    もんだいに こたえて<br>
+    クエストを クリアせよ！
+  </p>
+  <button class="btn" id="start-btn">▶ スタート</button>
+</div>
+
+<!-- ===== クイズ画面（最初は非表示） ===== -->
+<div class="window hidden" id="quiz-area">
   <h1>▶ 数学クエスト</h1>
   <h2 id="question"></h2>
   <button class="choice" id="c1"></button>
@@ -81,6 +92,8 @@ body {
   </p>
 </div>
 
+<audio id="bgm" src="maou_game_dangeon19.mp3" loop></audio>
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -92,25 +105,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const wrongBg =
     "https://t4.ftcdn.net/jpg/05/19/23/33/360_F_519233339_txOKdO17Ukj2GilJhCJMWNa4Ku3YJz62.jpg";
-/* ===== BGM設定（魔王魂 8bit29）===== */
-  const bgm = document.getElementById("bgm");
-  bgm.volume = 0.3; // 音量（0〜1）
 
-// ブラウザ制限対策：最初のクリックで再生
-document.addEventListener("click", () => {
-  if (bgm.paused) {
-    bgm.play().catch(() => {});
-  }
-}, { once: true });
+  /* ===== BGM設定 ===== */
+  const bgm = document.getElementById("bgm");
+  bgm.volume = 0.3;
+
+  document.addEventListener("click", () => {
+    if (bgm.paused) bgm.play().catch(() => {});
+  }, { once: true });
 
   function setBackground(url) {
     document.body.style.backgroundImage = `url('${url}')`;
   }
 
-  /* ===== 問題データ ===== */
+  /* ===== 問題データ（変更なし） ===== */
   const questions = [
-
-    // ======== 微分・接線 ========
     {
       q: "【問1-1】曲線 y＝x³－4x 上の点(2，0)における接線の方程式を求めるとき、最初にやることは？",
       choices: [
@@ -133,8 +142,6 @@ document.addEventListener("click", () => {
       answer: 0,
       explain: "接線は直線なので、その傾きが必要であり、傾きは微分で求められる。"
     },
-
-    // ======== 一次不定方程式 ========
     {
       q: "【問2-1】一次不定方程式 3x＋5y＝1 を解くときの基本的な考え方として正しいものはどれ？",
       choices: [
@@ -157,14 +164,15 @@ document.addEventListener("click", () => {
       answer: 0,
       explain: "一つの整数解 (2，−1) を基にすると、x＝2＋5t，y＝−1−3t（tは整数）がすべての整数解を表す。"
     }
-
   ];
 
   let current = 0;
 
+  const titleArea = document.getElementById("title-area");
   const qArea = document.getElementById("quiz-area");
   const resultArea = document.getElementById("result-area");
   const endArea = document.getElementById("end-area");
+
   const qText = document.getElementById("question");
   const btns = [
     document.getElementById("c1"),
@@ -172,9 +180,11 @@ document.addEventListener("click", () => {
     document.getElementById("c3"),
     document.getElementById("c4")
   ];
+
   const msg = document.getElementById("message");
   const explain = document.getElementById("explain");
   const nextBtn = document.getElementById("next-btn");
+  const startBtn = document.getElementById("start-btn");
 
   function loadQuestion() {
     const q = questions[current];
@@ -214,17 +224,17 @@ document.addEventListener("click", () => {
     };
   }
 
+  /* ===== スタート処理（追加） ===== */
+  startBtn.onclick = () => {
+    titleArea.classList.add("hidden");
+    qArea.classList.remove("hidden");
+    loadQuestion();
+  };
+
   /* ===== 初期化 ===== */
   setBackground(normalBg);
-  loadQuestion();
-
 });
 </script>
-<audio id="bgm" src="maou_game_dangeon19.mp3" loop></audio>
+
 </body>
 </html>
-
-
-
-
-
