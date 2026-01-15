@@ -105,6 +105,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const wrongBg =
     "https://t4.ftcdn.net/jpg/05/19/23/33/360_F_519233339_txOKdO17Ukj2GilJhCJMWNa4Ku3YJz62.jpg";
+  /* ===== 効果音 ===== */
+  const correctSound = new Audio("大勢で拍手.mp3");
+  const failedSound = new Audio("呪いの旋律.mp3");
 
   /* ===== BGM設定 ===== */
   const bgm = document.getElementById("bgm");
@@ -203,9 +206,13 @@ document.addEventListener("DOMContentLoaded", function() {
     if (i === q.answer) {
       msg.textContent = "やるじゃないか！";
       setBackground(correctBg);
+      correctSound.currentTime = 0;
+      correctSound.play();
     } else {
       msg.textContent = "❌ Game over　まだまだだな";
       setBackground(wrongBg);
+      failedSound.currentTime = 0;
+      failedSound.play();
     }
 
     explain.textContent = q.explain;
@@ -238,4 +245,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+
 
