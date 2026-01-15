@@ -92,6 +92,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const wrongBg =
     "https://t4.ftcdn.net/jpg/05/19/23/33/360_F_519233339_txOKdO17Ukj2GilJhCJMWNa4Ku3YJz62.jpg";
+/* ===== BGM設定（魔王魂 8bit29）===== */
+  const bgm = document.getElementById("bgm");
+  bgm.volume = 0.3; // 音量（0〜1）
+
+// ブラウザ制限対策：最初のクリックで再生
+document.addEventListener("click", () => {
+  if (bgm.paused) {
+    bgm.play().catch(() => {});
+  }
+}, { once: true });
 
   function setBackground(url) {
     document.body.style.backgroundImage = `url('${url}')`;
@@ -193,20 +203,23 @@ document.addEventListener("DOMContentLoaded", function() {
     nextBtn.onclick = () => {
       current++;
       setBackground(normalBg);
-      resultArea.classList.add("hidden");
-
-      if (current >= questions.length) {
-        endArea.classList.remove("hidden");
-      } else {
+      if (current < questions.length) {
+        resultArea.classList.add("hidden");
         qArea.classList.remove("hidden");
         loadQuestion();
+      } else {
+        resultArea.classList.add("hidden");
+        endArea.classList.remove("hidden");
       }
     };
   }
 
+  /* ===== 初期化 ===== */
+  setBackground(normalBg);
   loadQuestion();
+
 });
 </script>
-
+<audio id="bgm" src="maou_game_dangeon19.mp3" loop></audio>
 </body>
 </html>
